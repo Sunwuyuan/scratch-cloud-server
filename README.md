@@ -24,6 +24,19 @@ docker compose up -d
 
 The server will be available at ws://localhost:9080/. Logs are persisted in the `./logs` directory on the host.
 
+Alternatively, if Docker Hub publishing is configured for this repository, you can pull the pre-built image:
+
+```bash
+# To find the Docker Hub username:
+# 1. Go to the repository's Actions tab on GitHub
+# 2. Look for successful "Docker Build" workflow runs
+# 3. Check the workflow logs for the image name being pushed
+# OR ask the repository maintainer for the Docker Hub username
+
+docker pull <username>/cloud-server:latest
+docker run -d -p 9080:9080 <username>/cloud-server:latest
+```
+
 To stop the server:
 
 ```bash
@@ -108,3 +121,24 @@ server {
 ```
 
 You may also want to make a systemd service file for the server, but this is left as an exercise to the reader.
+
+## Development
+
+### CI/CD
+
+This repository includes a GitHub Actions workflow that automatically builds and publishes Docker images:
+
+- **Trigger**: Automatically runs on push to `main` branch and on version tags (e.g., `v1.0.0`)
+- **Image name**: `cloud-server`
+- **Tags**: 
+  - `latest` tag for main branch pushes
+  - Semantic version tags (e.g., `1.0.0`, `1.0`) for version tag pushes
+
+To enable Docker Hub publishing, configure the following repository secrets:
+- `DOCKER_USERNAME`: Your Docker Hub username
+- `DOCKER_PASSWORD`: Your Docker Hub password or access token
+
+And set this repository variable:
+- `DOCKER_ENABLED`: Set to `true` to enable Docker Hub publishing
+
+The workflow will build the Docker image on every push and only push to Docker Hub if the `DOCKER_ENABLED` variable is set to `true`.
