@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Logs
+logs
+*.log
+
+# Git files
+.git
+.gitignore
+.github
+
+# Documentation
+doc
+*.md
+LICENSE
+
+# Test files
+src/tests
+
+# Development files
+.vscode
+.idea
+
+# Environment files (should be configured via docker-compose or runtime)
+.env
+.env.local
+
+# Private files
+private.filter
