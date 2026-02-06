@@ -1,0 +1,41 @@
+services:
+  cloud-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scratch-cloud-server
+    restart: unless-stopped
+    ports:
+      - "9080:9080"
+    environment:
+      # Port configuration
+      - PORT=9080
+      # Set to 'true' if using a reverse proxy
+      - TRUST_PROXY=false
+      # Set to 'true' to anonymize IP addresses in logs
+      - ANONYMIZE_ADDRESSES=false
+      # Production environment
+      - NODE_ENV=production
+    volumes:
+      # Persist logs outside the container
+      - ./logs:/app/logs
+    # Resource limits (optional, can be adjusted based on needs)
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    # Health check to ensure the service is running
+    # Using Node.js to check the HTTP endpoint
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9080/', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# Optional: Define a network if you want to connect with other services
+networks:
+  default:
+    name: scratch-cloud-network
